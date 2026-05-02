@@ -1,13 +1,14 @@
-use axum::Router;
-use dotenvy::dotenv;
-use tokio::net::TcpListener;
-
 mod db;
 mod state;
 mod routes;
 mod controllers;
 mod services;
 mod entity;
+
+use axum::Router;
+use dotenvy::dotenv;
+use tokio::net::TcpListener;
+use crate::routes::UserRoute;
 
 #[tokio::main]
 async fn main() {
@@ -19,7 +20,7 @@ async fn main() {
         db,
     };
 
-    let app = Router::new().merge(routes::UserRoute::user_routes()).with_state(state);
+    let app = Router::new().merge(UserRoute::create_user_routes()).with_state(state);
 
     let listener = TcpListener::bind("0.0.0.0:3000").await.unwrap();
 

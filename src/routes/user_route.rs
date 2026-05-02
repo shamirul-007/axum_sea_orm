@@ -13,7 +13,7 @@ impl UserRoute {
         Json(controller.get_users().await)
     }
 
-    pub fn user_routes() -> Router<AppState> {
+    pub fn create_user_routes() -> Router<AppState> {
         Router::new().route("/", get(Self::get_users))
     }
 }
