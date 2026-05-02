@@ -5,6 +5,7 @@ use tokio::net::TcpListener;
 mod db;
 mod state;
 mod routes;
+mod handlers;
 
 #[tokio::main]
 async fn main() {
