@@ -1,37 +1,20 @@
-use crate::modules::user::service::UserService;
+use axum::{Json, extract::{Path, State}};
 
-#[derive(Clone)]
-pub struct UserController {
-    pub service: UserService,
+use crate::{modules::user::service::UserService, state::AppState};
+
+pub async fn get_users(State(state): State<AppState>) -> Json<serde_json::Value> {
+    let users = UserService::new(state.db).get_users().await.unwrap();
+
+    Json(serde_json::json!(users))
 }
 
-impl UserController {
-    pub fn new(service: UserService) -> Self {
-        Self { service }
-    }
-
-    pub async fn get_users(&self) -> serde_json::Value {
-        let users = self.service.get_users().await.unwrap();
-
-        serde_json::json!(users)
-    }
-
-    pub async fn get_user(&self, id: i32) -> Result<serde_json::Value, String> {
-        let user = self.service.get_user(id).await;
-
-        match user {
-            Ok(Some(user)) => {
-                Ok(
-                    serde_json::json!({
-                    "success": true,
-                    "data": user
-                })
-                )
-            }
-
-            Ok(None) => { Err("User not found".to_string()) }
-
-            Err(_) => { Err("Internal server error".to_string()) }
-        }
+pub async fn find_by_id(
+    State(state): State<AppState>,
+    Path(id): Path<i32>,
+) -> Json<serde_json::Value> {
+    match UserService::new(state.db).get_user(id).await {
+        Ok(Some(user)) => Json(serde_json::json!({ "success": true, "data": user })),
+        Ok(None) => Json(serde_json::json!({ "success": false, "message": "User not found" })),
+        Err(_) => Json(serde_json::json!({ "success": false, "message": "Internal server error" })),
     }
 }
