@@ -1,6 +1,6 @@
-use sea_orm::{ DatabaseConnection, EntityTrait };
+use sea_orm::{DatabaseConnection, EntityTrait};
 
-use crate::entity::user;
+use crate::modules::user::model as user;
 
 #[derive(Clone)]
 pub struct UserService {
@@ -16,10 +16,7 @@ impl UserService {
         user::Entity::find().all(&self.db).await
     }
 
-    pub async fn get_user(
-        &self,
-        id: i32
-    ) -> Result<std::option::Option<user::Model>, sea_orm::DbErr> {
+    pub async fn get_user(&self, id: i32) -> Result<Option<user::Model>, sea_orm::DbErr> {
         user::Entity::find_by_id(id).one(&self.db).await
     }
 }

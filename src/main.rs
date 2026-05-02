@@ -1,15 +1,19 @@
 mod db;
+mod modules;
 mod state;
-mod routes;
-mod controllers;
-mod services;
-mod entity;
 mod utils;
 
 use axum::Router;
 use dotenvy::dotenv;
 use tokio::net::TcpListener;
-use crate::{ routes::{ create_routes }, utils::init_logger };
+use crate::{state::AppState, utils::init_logger};
+
+fn create_routes() -> Router<AppState> {
+    Router::new().nest(
+        "/api/v1",
+        modules::user::routes::UserRoute::create_user_routes(),
+    )
+}
 
 #[tokio::main]
 async fn main() {
@@ -19,9 +23,9 @@ async fn main() {
     tracing::info!("env files loaded");
 
     let db = db::connect_to_db().await;
-    tracing::info!("Databased connected");
+    tracing::info!("Database connected");
 
-    let state = state::AppState {
+    let state = AppState {
         db,
     };
     tracing::info!("global state created");

@@ -1,4 +1,4 @@
-use crate::services::UserService;
+use crate::modules::user::service::UserService;
 
 #[derive(Clone)]
 pub struct UserController {

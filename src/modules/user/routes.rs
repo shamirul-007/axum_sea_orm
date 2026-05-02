@@ -1,6 +1,6 @@
-use axum::{ Json, Router, extract::{ Path, State }, routing::get };
+use axum::{Json, Router, extract::{Path, State}, routing::get};
 
-use crate::{ controllers::UserController, services::UserService, state::AppState };
+use crate::{modules::user::handler::UserController, modules::user::service::UserService, state::AppState};
 
 #[derive(Clone)]
 pub struct UserRoute;
