@@ -20,7 +20,9 @@ impl UserRoute {
         let service = UserService::new(state.db.clone());
         let controller = UserController::new(service);
 
-        match controller.get_user(id).await {
+        let user = controller.get_user(id).await;
+
+        match user {
             Ok(res) => Json(res),
 
             Err(msg) =>
