@@ -1,19 +1,13 @@
 mod db;
 mod modules;
+mod routes;
 mod state;
 mod utils;
 
 use axum::Router;
 use dotenvy::dotenv;
 use tokio::net::TcpListener;
-use crate::{state::AppState, utils::init_logger};
-
-fn create_routes() -> Router<AppState> {
-    Router::new().nest(
-        "/api/v1",
-        modules::user::routes::UserRoute::create_user_routes(),
-    )
-}
+use crate::{ state::AppState, utils::init_logger };
 
 #[tokio::main]
 async fn main() {
@@ -31,7 +25,7 @@ async fn main() {
     tracing::info!("global state created");
 
     let app = Router::new()
-        .merge(create_routes())
+        .merge(routes::create_routes())
         .with_state(state)
         .layer(tower_http::trace::TraceLayer::new_for_http());
     tracing::info!("routes created");
