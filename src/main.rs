@@ -30,7 +30,7 @@ async fn main() {
         .layer(tower_http::trace::TraceLayer::new_for_http());
     tracing::info!("routes created");
 
-    let listener = TcpListener::bind("0.0.0.0:3000").await.unwrap();
-    tracing::info!("🚀 Server running on http://localhost:3000");
+    let listener = TcpListener::bind("0.0.0.0:4000").await.unwrap();
+    tracing::info!("🚀 Server running on http://localhost:4000");
     axum::serve(listener, app).await.unwrap();
 }

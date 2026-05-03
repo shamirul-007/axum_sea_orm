@@ -1,7 +1,12 @@
-use axum::{ Router, routing::get };
+use axum::{routing::get, Router};
 
-use crate::{ modules::post::handler::{ get_post, get_posts }, state::AppState };
+use crate::{
+    modules::post::handler::{create_post, get_post, get_posts},
+    state::AppState,
+};
 
 pub fn post_routes() -> Router<AppState> {
-    Router::new().route("/posts", get(get_posts)).route("/posts/:id", get(get_post))
+    Router::new()
+        .route("/posts", get(get_posts).post(create_post))
+        .route("/posts/:id", get(get_post))
 }

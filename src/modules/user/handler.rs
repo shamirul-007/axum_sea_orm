@@ -1,22 +1,37 @@
-use axum::{ Json, extract::{ Path, State } };
+use axum::{ extract::{ Path, State }, Json };
+use validator::Validate;
 
-use crate::{ modules::user::service::UserService, state::AppState };
+use crate::{
+    modules::user::{ self, dto::CreateUserDto, service::UserService },
+    state::AppState,
+    utils::{ ApiResponse, AppError },
+};
 
-pub async fn get_users(State(state): State<AppState>) -> Json<serde_json::Value> {
-    let users = UserService::new(state.db).get_users().await.unwrap();
+pub async fn get_users(State(state): State<AppState>) -> Result<
+    Json<ApiResponse<Vec<user::model::Model>>>,
+    AppError
+> {
+    let users = UserService::new(state.db).get_users().await?;
 
-    Json(serde_json::json!(users))
+    Ok(Json(ApiResponse::success(users)))
 }
 
 pub async fn find_by_id(
     State(state): State<AppState>,
     Path(id): Path<i32>
-) -> Json<serde_json::Value> {
-    let user = UserService::new(state.db).get_user(id).await;
+) -> Result<axum::Json<ApiResponse<user::model::Model>>, AppError> {
+    let user = UserService::new(state.db).get_user(id).await?;
 
-    match user {
-        Ok(Some(user)) => Json(serde_json::json!({ "success": true, "data": user })),
-        Ok(None) => Json(serde_json::json!({ "success": false, "message": "User not found" })),
-        Err(_) => Json(serde_json::json!({ "success": false, "message": "Internal server error" })),
-    }
+    Ok(Json(ApiResponse::success(user)))
+}
+
+pub async fn create_user(
+    State(state): State<AppState>,
+    Json(payload): Json<CreateUserDto>
+) -> Result<Json<ApiResponse<crate::modules::user::model::Model>>, AppError> {
+    payload.validate()?;
+
+    let user = UserService::new(state.db).create_user(payload).await?;
+
+    Ok(Json(ApiResponse::success(user)))
 }
