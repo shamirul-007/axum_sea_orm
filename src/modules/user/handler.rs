@@ -2,7 +2,7 @@ use axum::{ extract::{ Path, State }, Json };
 use validator::Validate;
 
 use crate::{
-    modules::user::{ self, dto::CreateUserDto, service::UserService },
+    modules::user::{ self, dto::{ CreateUserDto, UpdateUserDto }, service::UserService },
     state::AppState,
     utils::{ ApiResponse, AppError },
 };
@@ -33,5 +33,16 @@ pub async fn create_user(
 
     let user = UserService::new(state.db).create_user(payload).await?;
 
+    Ok(Json(ApiResponse::success(user)))
+}
+
+pub async fn update_user(
+    State(state): State<AppState>,
+    Path(id): Path<i32>,
+    Json(payload): Json<UpdateUserDto>
+) -> Result<axum::Json<ApiResponse<user::model::Model>>, AppError> {
+    payload.validate()?;
+
+    let user = UserService::new(state.db).update_user(id, payload).await?;
     Ok(Json(ApiResponse::success(user)))
 }

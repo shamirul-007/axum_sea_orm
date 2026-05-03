@@ -1,6 +1,6 @@
 use sea_orm::{ ActiveModelTrait, DatabaseConnection, EntityTrait, Set };
 
-use crate::{ modules::user::model as user, utils::AppError };
+use crate::{ modules::user::{ dto::UpdateUserDto, model as user }, utils::AppError };
 use super::dto::CreateUserDto;
 
 #[derive(Clone)]
@@ -35,5 +35,21 @@ impl UserService {
 
         let user = user.insert(&self.db).await?;
         Ok(user)
+    }
+
+    pub async fn update_user(&self, id: i32, data: UpdateUserDto) -> Result<user::Model, AppError> {
+        let user = self.get_user(id).await?;
+
+        let mut user_active: user::ActiveModel = user.into();
+
+        if let Some(value) = data.email {
+            user_active.email = sea_orm::Set(value);
+        }
+
+        if let Some(value) = data.name {
+            user_active.name = sea_orm::Set(value);
+        }
+
+        Ok(user_active.update(&self.db).await?)
     }
 }
