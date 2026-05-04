@@ -3,7 +3,7 @@ use validator::Validate;
 
 #[derive(Debug, Deserialize, Serialize, Validate)]
 pub struct CreateUserDto {
-    #[validate(length(min = 1, message = "Name is required"))]
+    #[validate(length(min = 3, message = "Name is required"))]
     pub name: String,
     #[validate(email(message = "Invalid email format"))]
     pub email: String,
@@ -11,7 +11,7 @@ pub struct CreateUserDto {
 
 #[derive(Debug, Deserialize, Serialize, Validate)]
 pub struct UpdateUserDto {
-    #[validate(length(min = 1, message = "Name is required"))]
+    #[validate(length(min = 3, message = "Name is required"))]
     pub name: Option<String>,
     #[validate(email(message = "Invalid email format"))]
     pub email: Option<String>,
