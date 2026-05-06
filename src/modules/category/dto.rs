@@ -7,7 +7,7 @@ pub struct CreateCategoryDto {
     pub name: String,
     
     #[validate(length(min = 3,message = "Category description must be at least 3 characters long or max 3000"))]
-    pub image: Option<String>,
+    pub image: String,
     
     #[validate(length(min = 3, max = 100, message = "Category description must be at least 3 characters long or max 100"))]
     pub description: Option<String>
