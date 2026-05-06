@@ -5,10 +5,15 @@ use crate::modules::category::service::CategoryService;
 use crate::state::AppState;
 use crate::utils::{ ApiResponse, AppError, ValidatedJson };
 use crate::modules::category::{ model as category };
-use crate::modules::category::dto::CreateCategoryDto;
+use crate::modules::category::dto::{CreateCategoryDto, UpdateCategoryDto};
 
 pub async fn get_category_by_id(State(state): State<AppState>, Path(id): Path<Uuid>) -> Result<Json<ApiResponse<category::Model>>, AppError> {
     let category = CategoryService::new(state.db).get_category_by_id(id).await?;
+    Ok(Json(ApiResponse::success(category)))
+}
+
+pub async fn update_category(State(state): State<AppState>, Path(id): Path<Uuid>, ValidatedJson(data): ValidatedJson<UpdateCategoryDto>) -> Result<Json<ApiResponse<category::Model>>, AppError> {
+    let category = CategoryService::new(state.db).update_category(id, data).await?;
     Ok(Json(ApiResponse::success(category)))
 }
 
