@@ -1,8 +1,4 @@
-use axum::{
-    http::StatusCode,
-    response::{IntoResponse, Response},
-    Json,
-};
+use axum::{ http::StatusCode, response::{ IntoResponse, Response }, Json };
 use serde::Serialize;
 use thiserror::Error;
 use validator::ValidationErrors;
@@ -49,34 +45,25 @@ impl<T: Serialize> ApiResponse<T> {
 
 #[derive(Error, Debug)]
 pub enum AppError {
-    #[error("Not found: {0}")]
-    NotFound(String),
-    #[error("Internal server error: {0}")]
-    Internal(String),
-    #[error("Bad request: {0}")]
-    BadRequest(String),
-    #[error("Validation failed")]
-    ValidationError(#[from] ValidationErrors),
-    #[error("Database error: {0}")]
-    DbError(#[from] sea_orm::DbErr),
+    #[error("Not found: {0}")] NotFound(String),
+    #[error("Internal server error: {0}")] Internal(String),
+    #[error("Bad request: {0}")] BadRequest(String),
+    #[error("Validation failed")] ValidationError(#[from] ValidationErrors),
+    #[error("Database error: {0}")] DbError(#[from] sea_orm::DbErr),
 }
 
 impl IntoResponse for AppError {
     fn into_response(self) -> Response {
         let (status, body) = match self {
             AppError::NotFound(msg) => (StatusCode::NOT_FOUND, ApiResponse::<()>::error(msg)),
-            AppError::Internal(msg) => (
-                StatusCode::INTERNAL_SERVER_ERROR,
-                ApiResponse::<()>::error(msg),
-            ),
+            AppError::Internal(msg) =>
+                (StatusCode::INTERNAL_SERVER_ERROR, ApiResponse::<()>::error(msg)),
             AppError::BadRequest(msg) => (StatusCode::BAD_REQUEST, ApiResponse::<()>::error(msg)),
             AppError::ValidationError(errs) => {
                 (StatusCode::BAD_REQUEST, ApiResponse::<()>::validation_error(errs))
             }
-            AppError::DbError(err) => (
-                StatusCode::INTERNAL_SERVER_ERROR,
-                ApiResponse::<()>::error(err.to_string()),
-            ),
+            AppError::DbError(err) =>
+                (StatusCode::INTERNAL_SERVER_ERROR, ApiResponse::<()>::error(err.to_string())),
         };
 
         (status, Json(body)).into_response()

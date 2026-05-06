@@ -1,18 +1,16 @@
-use axum::{
-    extract::{Path, State},
-    Json,
-};
+use axum::{ extract::{ Path, State }, Json };
 use validator::Validate;
 
 use crate::{
-    modules::post::{dto::CreatePostDto, service::PostService},
+    modules::post::{ dto::CreatePostDto, service::PostService },
     state::AppState,
-    utils::{ApiResponse, AppError, ValidatedJson},
+    utils::{ ApiResponse, AppError },
 };
 
-pub async fn get_posts(
-    State(state): State<AppState>,
-) -> Result<Json<ApiResponse<Vec<crate::modules::post::model::Model>>>, AppError> {
+pub async fn get_posts(State(state): State<AppState>) -> Result<
+    Json<ApiResponse<Vec<crate::modules::post::model::Model>>>,
+    AppError
+> {
     let posts = PostService::new(state.db).get_posts().await?;
 
     Ok(Json(ApiResponse::success(posts)))
@@ -20,7 +18,7 @@ pub async fn get_posts(
 
 pub async fn get_post(
     State(state): State<AppState>,
-    Path(id): Path<i32>,
+    Path(id): Path<i32>
 ) -> Result<Json<ApiResponse<crate::modules::post::model::Model>>, AppError> {
     let post = PostService::new(state.db).get_post(id).await?;
 
@@ -29,7 +27,7 @@ pub async fn get_post(
 
 pub async fn create_post(
     State(state): State<AppState>,
-    ValidatedJson(payload): ValidatedJson<CreatePostDto>,
+    Json(payload): Json<CreatePostDto>
 ) -> Result<Json<ApiResponse<crate::modules::post::model::Model>>, AppError> {
     payload.validate()?;
 
