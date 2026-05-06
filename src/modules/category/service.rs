@@ -17,6 +17,15 @@ impl CategoryService {
             db
         }
     }
+        
+    pub async fn get_category_by_id(&self, id: Uuid) -> Result<category::Model, AppError> {
+        let category = category::Entity::find_by_id(id).one(&self.db).await?;
+        match category { 
+            Some(c) => Ok(c),
+            None => Err(AppError::NotFound(format!("Category with id: {}", id)))
+        }
+    }
+    
     pub async fn get_categories(&self) -> Result<Vec<category::Model>,AppError>
     {
        let categories = category::Entity::find().all(&self.db).await?;

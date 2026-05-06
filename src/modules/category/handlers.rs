@@ -1,10 +1,16 @@
-use axum::extract::State;
+use axum::extract::{Path, State};
 use axum::Json;
+use uuid::Uuid;
 use crate::modules::category::service::CategoryService;
 use crate::state::AppState;
 use crate::utils::{ ApiResponse, AppError, ValidatedJson };
 use crate::modules::category::{ model as category };
 use crate::modules::category::dto::CreateCategoryDto;
+
+pub async fn get_category_by_id(State(state): State<AppState>, Path(id): Path<Uuid>) -> Result<Json<ApiResponse<category::Model>>, AppError> {
+    let category = CategoryService::new(state.db).get_category_by_id(id).await?;
+    Ok(Json(ApiResponse::success(category)))
+}
 
 pub async fn get_categories(State(state): State<AppState>) -> Result<
     Json<ApiResponse<Vec<category::Model>>>,
@@ -19,6 +25,5 @@ pub async fn create_category(
     ValidatedJson(payload): ValidatedJson<CreateCategoryDto>
 ) -> Result<Json<ApiResponse<category::Model>>, AppError> {
     let category = CategoryService::new(state.db).create_category(payload).await?;
-
     Ok(Json(ApiResponse::success(category)))
 }
