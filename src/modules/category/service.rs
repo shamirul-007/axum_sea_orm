@@ -1,8 +1,9 @@
-use sea_orm::{ActiveModelTrait, DatabaseConnection, EntityTrait, NotSet};
+use sea_orm::{ActiveModelTrait, ColumnTrait, DatabaseConnection, EntityTrait, NotSet, QueryFilter};
 use sea_orm::ActiveValue::Set;
 use uuid::Uuid;
 use crate::modules::category::{model as category};
 use crate::modules::category::dto::CreateCategoryDto;
+use crate::modules::category::model::Model;
 use crate::utils::AppError;
 
 pub struct CategoryService {
@@ -22,8 +23,18 @@ impl CategoryService {
         Ok(categories)
     }
 
+    pub async fn get_category_by_slug(&self, slug: String) -> Result<Option<Model>, AppError> {
+        let category = category::Entity::find().filter(category::Column::Slug.eq(slug)).one(&self.db).await?;
+
+        Ok(category)
+    }
+
     pub async fn create_category(&self, data: CreateCategoryDto) -> Result<category::Model, AppError> {
         let slug = data.name.to_lowercase().replace(" ", "-");
+
+        if let Ok(Some(_)) = self.get_category_by_slug(slug.clone()).await {
+            return Err(AppError::BadRequest("category already exists".into()));
+        }
         
         let category = category::ActiveModel {
           name: Set(data.name),
