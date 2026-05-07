@@ -32,3 +32,8 @@ pub async fn create_category(
     let category = CategoryService::new(state.db).create_category(payload).await?;
     Ok(Json(ApiResponse::success(category)))
 }
+
+pub async fn delete_category(State(state): State<AppState>, Path(id): Path<Uuid>) -> Result<Json<ApiResponse<String>>, AppError> {
+    CategoryService::new(state.db).delete_category_by_id(id).await?;
+    Ok(Json(ApiResponse::success("Category deleted successfully".to_string())))
+}
