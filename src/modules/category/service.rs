@@ -5,7 +5,7 @@ use crate::modules::category::model::Model;
 use crate::utils::AppError;
 use sea_orm::ActiveValue::Set;
 use sea_orm::{
-    ActiveModelTrait, ColumnTrait, DatabaseConnection, EntityTrait, NotSet, QueryFilter,
+    ActiveModelTrait, ColumnTrait, DatabaseConnection, EntityTrait, NotSet, QueryFilter, QueryOrder,
 };
 use uuid::Uuid;
 
@@ -19,10 +19,17 @@ impl CategoryService {
     }
 
     pub async fn get_category_by_id(&self, id: Uuid) -> Result<category::Model, AppError> {
-        let category = category::Entity::find_by_id(id).one(&self.db).await?;
+        let category = category::Entity::find_by_id(id)
+            .filter(category::Column::DeletedAt.is_null())
+            .one(&self.db)
+            .await?;
+
         match category {
             Some(c) => Ok(c),
-            None => Err(AppError::NotFound(format!("Category not found with id: {}", id))),
+            None => Err(AppError::NotFound(format!(
+                "Category not found with id: {}",
+                id
+            ))),
         }
     }
 
@@ -53,7 +60,11 @@ impl CategoryService {
     }
 
     pub async fn get_categories(&self) -> Result<Vec<category::Model>, AppError> {
-        let categories = category::Entity::find().all(&self.db).await?;
+        let categories = category::Entity::find()
+            .filter(category::Column::DeletedAt.is_null())
+            .order_by_desc(category::Column::CreatedAt)
+            .all(&self.db)
+            .await?;
         Ok(categories)
     }
 
@@ -68,9 +79,14 @@ impl CategoryService {
 
     pub async fn delete_category_by_id(&self, id: Uuid) -> Result<(), AppError> {
         let category = self.get_category_by_id(id).await?;
-        category::Entity::delete_by_id(category.id)
-            .exec(&self.db)
-            .await?;
+
+        let mut deleted_category: category::ActiveModel = category.into();
+
+        let now = chrono::Utc::now().naive_utc();
+
+        deleted_category.deleted_at = Set(Some(now));
+        deleted_category.updated_at = Set(now);
+        deleted_category.update(&self.db).await?;
 
         Ok(())
     }
