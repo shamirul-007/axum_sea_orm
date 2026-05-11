@@ -3,4 +3,5 @@
 pub use super::category::Entity as Category;
 pub use super::post::Entity as Post;
 pub use super::product::Entity as Product;
+pub use super::product_image::Entity as ProductImage;
 pub use super::user::Entity as User;

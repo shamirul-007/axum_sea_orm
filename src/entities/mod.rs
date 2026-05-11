@@ -5,4 +5,5 @@ pub mod prelude;
 pub mod category;
 pub mod post;
 pub mod product;
+pub mod product_image;
 pub mod user;
