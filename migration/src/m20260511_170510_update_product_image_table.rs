@@ -23,21 +23,7 @@ impl MigrationTrait for Migration {
                             .not_null()
                             .default(Expr::current_timestamp()),
                     )
-                    .add_column(
-                        ColumnDef::new(ProductImage::DeletedAt)
-                            .timestamp()
-                            .null(),
-                    )
-                    .to_owned(),
-            )
-            .await?;
-
-        // Drop old FK (important for replacing with CASCADE)
-        manager
-            .drop_foreign_key(
-                ForeignKey::drop()
-                    .name("fk-product-image")
-                    .table(ProductImage::Table)
+                    .add_column(ColumnDef::new(ProductImage::DeletedAt).timestamp().null())
                     .to_owned(),
             )
             .await?;
@@ -57,17 +43,6 @@ impl MigrationTrait for Migration {
     }
 
     async fn down(&self, manager: &SchemaManager) -> Result<(), DbErr> {
-        // Drop FK first
-        manager
-            .drop_foreign_key(
-                ForeignKey::drop()
-                    .name("fk-product-image")
-                    .table(ProductImage::Table)
-                    .to_owned(),
-            )
-            .await?;
-
-        // Remove columns
         manager
             .alter_table(
                 Table::alter()

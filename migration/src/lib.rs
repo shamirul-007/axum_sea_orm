@@ -7,6 +7,7 @@ mod m20260511_153546_create_product_table;
 mod m20260511_160219_update_category_table;
 mod m20260511_165320_create_product_image_table;
 mod m20260511_170510_update_product_image_table;
+mod m20260511_171859_create_product_features_table;
 
 pub struct Migrator;
 
@@ -21,6 +22,7 @@ impl MigratorTrait for Migrator {
             Box::new(m20260511_160219_update_category_table::Migration),
             Box::new(m20260511_165320_create_product_image_table::Migration),
             Box::new(m20260511_170510_update_product_image_table::Migration),
+            Box::new(m20260511_171859_create_product_features_table::Migration),
         ]
     }
 }
