@@ -1,0 +1,27 @@
+warning: unused import: `schema::*`
+ --> src/m20260504_153304_create_category_table.rs:1:38
+  |
+1 | use sea_orm_migration::{ prelude::*, schema::* };
+  |                                      ^^^^^^^^^
+  |
+  = note: `#[warn(unused_imports)]` (part of `#[warn(unused)]`) on by default
+
+warning: variant `description` should have an upper camel case name
+  --> src/m20260504_153304_create_category_table.rs:34:5
+   |
+34 |     description,
+   |     ^^^^^^^^^^^ help: convert the identifier to upper camel case: `Description`
+   |
+   = note: `#[warn(non_camel_case_types)]` (part of `#[warn(nonstandard_style)]`) on by default
+
+warning: unused import: `schema::*`
+ --> src/m20260511_153546_create_product_table.rs:1:38
+  |
+1 | use sea_orm_migration::{ prelude::*, schema::* };
+  |                                      ^^^^^^^^^
+
+warning: `migration` (lib) generated 3 warnings (run `cargo fix --lib -p migration` to apply 2 suggestions)
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 0.37s
+     Running `target/debug/migration up`
+Applying all pending migrations
+No pending migrations

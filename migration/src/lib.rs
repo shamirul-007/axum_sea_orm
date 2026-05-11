@@ -3,7 +3,8 @@ pub use sea_orm_migration::prelude::*;
 mod m20220101_000001_create_table;
 mod m20260502_090744_create_users;
 mod m20260504_153304_create_category_table;
-mod m20260507_162415_add_category_timestamps;
+mod m20260511_153546_create_product_table;
+mod m20260511_160219_update_category_table;
 
 pub struct Migrator;
 
@@ -14,7 +15,8 @@ impl MigratorTrait for Migrator {
             Box::new(m20220101_000001_create_table::Migration),
             Box::new(m20260502_090744_create_users::Migration),
             Box::new(m20260504_153304_create_category_table::Migration),
-            Box::new(m20260507_162415_add_category_timestamps::Migration),
+            Box::new(m20260511_153546_create_product_table::Migration),
+            Box::new(m20260511_160219_update_category_table::Migration),
         ]
     }
 }
