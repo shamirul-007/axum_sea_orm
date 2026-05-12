@@ -5,7 +5,7 @@ use crate::state::AppState;
 
 pub fn category_routes() -> Router<AppState> {
     Router::new()
-        .route("/categories", get(get_categories)
+        .route("/", get(get_categories)
             .post(create_category))
-        .route("/categories/:id", get(get_category_by_id).patch(update_category).delete(delete_category))
+        .route("/:id", get(get_category_by_id).patch(update_category).delete(delete_category))
 }

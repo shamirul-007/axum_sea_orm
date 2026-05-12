@@ -7,6 +7,6 @@ use crate::{
 
 pub fn post_routes() -> Router<AppState> {
     Router::new()
-        .route("/posts", get(get_posts).post(create_post))
-        .route("/posts/:id", get(get_post))
+        .route("/", get(get_posts).post(create_post))
+        .route("/:id", get(get_post))
 }

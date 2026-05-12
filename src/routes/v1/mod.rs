@@ -1,7 +1,17 @@
 use axum::Router;
 
-use crate::{ modules::{ post::routes::post_routes, user, category }, state::AppState };
+use crate::modules::product::routes::product_routes;
+use crate::{
+    modules::{category, post::routes::post_routes, user},
+    state::AppState,
+};
 
 pub fn routes() -> Router<AppState> {
-    Router::new().merge(user::routes::user_routes()).merge(post_routes()).merge(category::routes::category_routes())
+    Router::new()
+        .nest("/users", user::routes::user_routes())
+        .nest("/posts", post_routes())
+        .nest(
+            "/categories",
+            category::routes::category_routes().nest("/products", product_routes()),
+        )
 }
