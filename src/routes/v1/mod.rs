@@ -10,8 +10,6 @@ pub fn routes() -> Router<AppState> {
     Router::new()
         .nest("/users", user::routes::user_routes())
         .nest("/posts", post_routes())
-        .nest(
-            "/categories",
-            category::routes::category_routes().nest("/products", product_routes()),
-        )
+        .nest("/categories", category::routes::category_routes())
+        .nest("/products", product_routes())
 }
