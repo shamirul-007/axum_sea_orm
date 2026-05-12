@@ -3,6 +3,7 @@ mod modules;
 mod routes;
 mod state;
 mod utils;
+mod entities;
 
 use axum::Router;
 use dotenvy::dotenv;

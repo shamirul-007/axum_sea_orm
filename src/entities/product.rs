@@ -39,6 +39,8 @@ pub enum Relation {
         on_delete = "NoAction"
     )]
     Category,
+    #[sea_orm(has_many = "super::product_feature::Entity")]
+    ProductFeature,
     #[sea_orm(has_many = "super::product_image::Entity")]
     ProductImage,
 }
@@ -46,6 +48,12 @@ pub enum Relation {
 impl Related<super::category::Entity> for Entity {
     fn to() -> RelationDef {
         Relation::Category.def()
+    }
+}
+
+impl Related<super::product_feature::Entity> for Entity {
+    fn to() -> RelationDef {
+        Relation::ProductFeature.def()
     }
 }
 
