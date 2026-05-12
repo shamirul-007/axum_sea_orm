@@ -56,4 +56,24 @@ pub struct CreateProductDto {
 
     #[serde(default)]
     pub is_best_seller: bool,
+
+    #[validate(length(min = 1, message = "At least one feature is required"))]
+    #[validate(nested)]
+    pub product_features: Vec<CreateProductFeatureDto>,
+
+    #[validate(length(min = 1, message = "At least one image is required"))]
+    #[validate(nested)]
+    pub product_images: Vec<CreateProductImageDto>,
+}
+
+#[derive(Debug, Serialize, Deserialize, Validate)]
+pub struct CreateProductFeatureDto {
+    #[validate(length(min = 1, message = "Feature name is required"))]
+    pub name: String,
+}
+
+#[derive(Debug, Serialize, Deserialize, Validate)]
+pub struct CreateProductImageDto {
+    #[validate(url(message = "Invalid image URL"))]
+    pub image_url: String,
 }
