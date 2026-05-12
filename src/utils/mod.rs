@@ -3,5 +3,15 @@ pub mod response;
 pub mod validation;
 
 pub use logger::*;
-pub use response::{ ApiResponse, AppError };
+pub use response::{ApiResponse, AppError};
+use uuid::Uuid;
 pub use validation::ValidatedJson;
+use validator::ValidationError;
+
+pub fn validate_uuid(id: &Uuid) -> Result<(), ValidationError> {
+    if *id == Uuid::nil() {
+        return Err(ValidationError::new("invalid_uuid"));
+    }
+
+    Ok(())
+}
