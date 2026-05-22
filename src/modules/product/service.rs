@@ -95,6 +95,9 @@ impl ProductService {
             product_images: product_image,
             name: product.name,
             product_features,
+            created_at: product.created_at,
+            updated_at: product.updated_at,
+            deleted_at: product.deleted_at,
         };
 
         Ok(Some(product_res))

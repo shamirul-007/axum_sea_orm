@@ -1,3 +1,4 @@
+use chrono::{DateTime, NaiveDateTime, Utc};
 use sea_orm::prelude::Decimal;
 use crate::utils::validate_uuid;
 use serde::{Deserialize, Serialize};
@@ -108,6 +109,9 @@ pub struct ProductResponseDto {
     pub is_best_seller: bool,
     pub product_images: Vec<ProductImageResponseDto>,
     pub product_features: Vec<ProductFeatureResponseDto>,
+    pub created_at: NaiveDateTime,
+    pub updated_at: NaiveDateTime,
+    pub deleted_at: Option<NaiveDateTime>,
 }
 
 #[derive(Debug, Serialize)]
