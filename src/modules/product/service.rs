@@ -11,6 +11,7 @@ use sea_orm::{
     ActiveModelTrait, ColumnTrait, DatabaseConnection, EntityTrait, ModelTrait, QueryFilter,
     TransactionTrait,
 };
+use std::collections::HashMap;
 use uuid::Uuid;
 
 pub struct ProductService {
@@ -22,9 +23,99 @@ impl ProductService {
         Self { db }
     }
 
-    pub async fn get_products(&self) -> Result<Vec<product::Model>, AppError> {
-        let products = product::Entity::find().all(&self.db).await?;
-        Ok(products)
+    pub async fn get_products(&self) -> Result<Vec<ProductResponseDto>, AppError> {
+        let products = product::Entity::find()
+            .filter(product::Column::DeletedAt.is_null())
+            .all(&self.db)
+            .await?;
+
+        if products.is_empty() {
+            return Ok(Vec::<ProductResponseDto>::new());
+        };
+
+        let product_ids: Vec<Uuid> = products.iter().map(|p| p.id).collect();
+        let category_ids: Vec<Uuid> = products.iter().map(|p| p.category_id).collect();
+
+        let categories = category::Entity::find()
+            .filter(category::Column::Id.is_in(category_ids))
+            .all(&self.db)
+            .await?;
+
+        let category_map: HashMap<Uuid, category::Model> =
+            categories.into_iter().map(|c| (c.id, c)).collect();
+
+        let images = product_image::Entity::find()
+            .filter(product_image::Column::ProductId.is_in(product_ids.clone()))
+            .all(&self.db)
+            .await?;
+
+        let mut image_map: HashMap<Uuid, Vec<ProductImageResponseDto>> = HashMap::new();
+
+        for img in images {
+            image_map
+                .entry(img.product_id)
+                .or_default()
+                .push(ProductImageResponseDto {
+                    id: img.id,
+                    image_url: img.image_url,
+                });
+        }
+
+        let features = product_feature::Entity::find()
+            .filter(product_feature::Column::ProductId.is_in(product_ids.clone()))
+            .all(&self.db)
+            .await?;
+
+        let mut feature_map: HashMap<Uuid, Vec<ProductFeatureResponseDto>> = HashMap::new();
+
+        for feat in features {
+            feature_map
+                .entry(feat.product_id)
+                .or_default()
+                .push(ProductFeatureResponseDto {
+                    id: feat.id,
+                    name: feat.name,
+                })
+        }
+
+        let res = products
+            .into_iter()
+            .map(|p| {
+                let category = category_map.get(&p.category_id).unwrap().clone();
+
+                ProductResponseDto {
+                    id: p.id,
+                    name: p.name,
+                    slug: p.slug,
+                    category: CategoryResponseDto {
+                        id: category.id,
+                        name: category.name,
+                        slug: category.slug,
+                        description: category.description,
+                        image: category.image,
+                    },
+                    description: p.description,
+                    long_description: p.long_description,
+                    price: p.price,
+                    compared_at_price: p.compared_at_price,
+                    review_count: p.review_count,
+                    rating: p.rating,
+                    sku: p.sku,
+                    tagline: p.tagline,
+                    stock: p.stock,
+                    is_new: p.is_new.unwrap_or(false),
+                    is_featured: p.is_featured.unwrap_or(false),
+                    is_best_seller: p.is_best_seller.unwrap_or(false),
+                    product_images: image_map.remove(&p.id).unwrap_or_default(),
+                    product_features: feature_map.remove(&p.id).unwrap_or_default(),
+                    created_at: p.created_at,
+                    updated_at: p.updated_at,
+                    deleted_at: p.deleted_at,
+                }
+            })
+            .collect();
+
+        Ok(res)
     }
 
     pub async fn get_product_by_id(

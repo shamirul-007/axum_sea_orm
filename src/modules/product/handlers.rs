@@ -8,7 +8,7 @@ use axum::extract::State;
 
 pub async fn get_products(
     State(state): State<AppState>,
-) -> Result<Json<ApiResponse<Vec<product::Model>>>, AppError> {
+) -> Result<Json<ApiResponse<Vec<ProductResponseDto>>>, AppError> {
     let products = ProductService::new(state.db).get_products().await?;
 
     Ok(Json(ApiResponse::success(products)))
