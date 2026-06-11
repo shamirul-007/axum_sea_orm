@@ -56,10 +56,7 @@ impl ProductService {
             image_map
                 .entry(img.product_id)
                 .or_default()
-                .push(ProductImageResponseDto {
-                    id: img.id,
-                    image_url: img.image_url,
-                });
+                .push(ProductImageResponseDto::new(img.id, img.image_url));
         }
 
         let features = product_feature::Entity::find()
@@ -73,10 +70,7 @@ impl ProductService {
             feature_map
                 .entry(feat.product_id)
                 .or_default()
-                .push(ProductFeatureResponseDto {
-                    id: feat.id,
-                    name: feat.name,
-                })
+                .push(ProductFeatureResponseDto::new(feat.product_id, feat.name))
         }
 
         let res = products
@@ -118,10 +112,7 @@ impl ProductService {
 
         let product_image = images
             .into_iter()
-            .map(|p| ProductImageResponseDto {
-                image_url: p.image_url,
-                id: p.id,
-            })
+            .map(|p| ProductImageResponseDto::new(p.product_id, p.image_url))
             .collect();
 
         let feature = product_feature::Entity::find()
@@ -131,10 +122,7 @@ impl ProductService {
 
         let product_features = feature
             .into_iter()
-            .map(|p| ProductFeatureResponseDto {
-                id: p.id,
-                name: p.name,
-            })
+            .map(|p| ProductFeatureResponseDto::new(p.id, p.name))
             .collect();
 
         Ok(Some(ProductResponseDto::new(
