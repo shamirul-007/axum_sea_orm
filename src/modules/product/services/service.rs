@@ -1,7 +1,8 @@
 use crate::entities::product_feature;
 use crate::entities::product_image;
 use crate::entities::{category, product};
-use crate::modules::product::dto::{
+
+use crate::modules::product::dto::dto::{
     CategoryResponseDto, CreateProductDto, ProductFeatureResponseDto, ProductImageResponseDto,
     ProductResponseDto,
 };

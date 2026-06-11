@@ -1,10 +1,10 @@
 use crate::entities::product;
-use crate::modules::product::dto::{CreateProductDto, ProductResponseDto};
-use crate::modules::product::service::ProductService;
 use crate::state::AppState;
 use crate::utils::{ApiResponse, AppError, ValidatedJson};
 use axum::Json;
 use axum::extract::State;
+use crate::modules::product::dto::dto::{CreateProductDto, ProductResponseDto};
+use crate::modules::product::services::service::ProductService;
 
 pub async fn get_products(
     State(state): State<AppState>,
