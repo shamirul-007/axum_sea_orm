@@ -2,10 +2,11 @@ use crate::entities::product_feature;
 use crate::entities::product_image;
 use crate::entities::{category, product};
 
-use crate::modules::product::dto::dto::{
-    CategoryResponseDto, CreateProductDto, ProductFeatureResponseDto, ProductImageResponseDto,
-    ProductResponseDto,
-};
+use crate::modules::product::dto::request::create_product_dto::CreateProductDto;
+use crate::modules::product::dto::response::category_response_dto::CategoryResponseDto;
+use crate::modules::product::dto::response::product_feature_response_dto::ProductFeatureResponseDto;
+use crate::modules::product::dto::response::product_image_response_dto::ProductImageResponseDto;
+use crate::modules::product::dto::response::product_response_dto::ProductResponseDto;
 use crate::utils::AppError;
 use sea_orm::ActiveValue::Set;
 use sea_orm::{

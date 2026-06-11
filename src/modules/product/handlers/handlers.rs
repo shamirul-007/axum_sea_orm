@@ -3,7 +3,8 @@ use crate::state::AppState;
 use crate::utils::{ApiResponse, AppError, ValidatedJson};
 use axum::Json;
 use axum::extract::State;
-use crate::modules::product::dto::dto::{CreateProductDto, ProductResponseDto};
+use crate::modules::product::dto::request::create_product_dto::CreateProductDto;
+use crate::modules::product::dto::response::product_response_dto::ProductResponseDto;
 use crate::modules::product::services::service::ProductService;
 
 pub async fn get_products(
