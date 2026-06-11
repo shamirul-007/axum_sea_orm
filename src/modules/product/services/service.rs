@@ -3,7 +3,6 @@ use crate::entities::product_image;
 use crate::entities::{category, product};
 
 use crate::modules::product::dto::request::create_product_dto::CreateProductDto;
-use crate::modules::product::dto::response::category_response_dto::CategoryResponseDto;
 use crate::modules::product::dto::response::product_feature_response_dto::ProductFeatureResponseDto;
 use crate::modules::product::dto::response::product_image_response_dto::ProductImageResponseDto;
 use crate::modules::product::dto::response::product_response_dto::ProductResponseDto;
@@ -85,35 +84,10 @@ impl ProductService {
             .map(|p| {
                 let category = category_map.get(&p.category_id).unwrap().clone();
 
-                ProductResponseDto {
-                    id: p.id,
-                    name: p.name,
-                    slug: p.slug,
-                    category: CategoryResponseDto {
-                        id: category.id,
-                        name: category.name,
-                        slug: category.slug,
-                        description: category.description,
-                        image: category.image,
-                    },
-                    description: p.description,
-                    long_description: p.long_description,
-                    price: p.price,
-                    compared_at_price: p.compared_at_price,
-                    review_count: p.review_count,
-                    rating: p.rating,
-                    sku: p.sku,
-                    tagline: p.tagline,
-                    stock: p.stock,
-                    is_new: p.is_new.unwrap_or(false),
-                    is_featured: p.is_featured.unwrap_or(false),
-                    is_best_seller: p.is_best_seller.unwrap_or(false),
-                    product_images: image_map.remove(&p.id).unwrap_or_default(),
-                    product_features: feature_map.remove(&p.id).unwrap_or_default(),
-                    created_at: p.created_at,
-                    updated_at: p.updated_at,
-                    deleted_at: p.deleted_at,
-                }
+                let product_images = image_map.remove(&p.id).unwrap_or_default();
+                let product_features = feature_map.remove(&p.id).unwrap_or_default();
+
+                ProductResponseDto::new(p, category, product_images, product_features)
             })
             .collect();
 
@@ -163,37 +137,12 @@ impl ProductService {
             })
             .collect();
 
-        let product_res = ProductResponseDto {
-            id: product.id,
-            slug: product.slug,
-            category: CategoryResponseDto {
-                id: category.id,
-                name: category.name,
-                slug: category.slug,
-                image: category.image,
-                description: category.description,
-            },
-            description: product.description,
-            long_description: product.long_description,
-            price: product.price,
-            compared_at_price: product.compared_at_price,
-            review_count: product.review_count,
-            rating: product.rating,
-            sku: product.sku,
-            tagline: product.tagline,
-            stock: product.stock,
-            is_new: product.is_new.unwrap_or(false),
-            is_featured: product.is_featured.unwrap_or(false),
-            is_best_seller: product.is_best_seller.unwrap_or(false),
-            product_images: product_image,
-            name: product.name,
+        Ok(Some(ProductResponseDto::new(
+            product,
+            category,
+            product_image,
             product_features,
-            created_at: product.created_at,
-            updated_at: product.updated_at,
-            deleted_at: product.deleted_at,
-        };
-
-        Ok(Some(product_res))
+        )))
     }
 
     pub async fn add_product(
