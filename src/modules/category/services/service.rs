@@ -20,14 +20,10 @@ impl CategoryService {
     }
 
     pub async fn get_category_by_id(&self, id: Uuid) -> Result<CategoryResponseDto, AppError> {
-        let trx = self.db.begin().await?;
-        let category = category::Entity::find_by_id(id).one(&trx).await?;
+        let category = category::Entity::find_by_id(id).one(&self.db).await?;
 
         match category {
-            Some(c) => {
-                trx.commit().await?;
-                Ok(CategoryResponseDto::new(c))
-            }
+            Some(c) => Ok(CategoryResponseDto::new(c)),
             None => Err(AppError::NotFound(format!(
                 "Category not found with id: {}",
                 id
@@ -75,18 +71,15 @@ impl CategoryService {
     }
 
     pub async fn get_categories(&self) -> Result<Vec<CategoryResponseDto>, AppError> {
-        let trx = self.db.begin().await?;
         let categories = category::Entity::find()
             .order_by_desc(category::Column::CreatedAt)
-            .all(&trx)
+            .all(&self.db)
             .await?;
 
         let categories: Vec<CategoryResponseDto> = categories
             .into_iter()
             .map(CategoryResponseDto::new)
             .collect();
-
-        trx.commit().await?;
 
         Ok(categories)
     }
@@ -95,18 +88,13 @@ impl CategoryService {
         &self,
         slug: String,
     ) -> Result<Option<CategoryResponseDto>, AppError> {
-        let trx = self.db.begin().await?;
-
         let category = category::Entity::find()
             .filter(category::Column::Slug.eq(&slug))
-            .one(&trx)
+            .one(&self.db)
             .await?;
 
         match category {
-            Some(c) => {
-                trx.commit().await?;
-                Ok(Some(CategoryResponseDto::new(c)))
-            }
+            Some(c) => Ok(Some(CategoryResponseDto::new(c))),
             None => Err(AppError::NotFound(format!(
                 "Category not found with slug: {}",
                 slug
