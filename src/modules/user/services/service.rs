@@ -1,7 +1,8 @@
 use sea_orm::{ ActiveModelTrait, DatabaseConnection, EntityTrait, Set };
 
-use crate::{ modules::user::{ dto::UpdateUserDto, model as user }, utils::AppError };
-use super::dto::CreateUserDto;
+use crate::{ entities::user, utils::AppError };
+use crate::modules::user::dto::request::create_user_dto::CreateUserDto;
+use crate::modules::user::dto::request::update_user_dto::UpdateUserDto;
 
 #[derive(Clone)]
 pub struct UserService {
