@@ -27,3 +27,11 @@ validator = { version = "0.20.0", features = ["derive"] }
 thiserror = "2.0.18"
 uuid = { version = "1.23.1", features = ["v4"] }
 chrono = "0.4.44"
+jsonwebtoken = "9"                       # JWT encode/decode (HS256)
+argon2       = "0.5"                      # password hashing (salted)
+sha2         = "0.10"                     # deterministic hash for refresh tokens
+rand         = "0.8"
+
+[dev-dependencies]
+tower = { version = "0.4", features = ["util"] }
+http-body-util = "0.1"
