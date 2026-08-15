@@ -9,3 +9,4 @@ pub mod product_feature;
 pub mod product_image;
 pub mod refresh_token;
 pub mod user;
+pub mod sea_orm_active_enums;
