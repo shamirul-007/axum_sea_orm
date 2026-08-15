@@ -50,6 +50,8 @@ pub enum AppError {
     #[error("Bad request: {0}")] BadRequest(String),
     #[error("Validation failed")] ValidationError(#[from] ValidationErrors),
     #[error("Database error: {0}")] DbError(#[from] sea_orm::DbErr),
+    #[error("Unauthorized: {0}")] Unauthorized(String),
+    #[error("Forbidden: {0}")] Forbidden(String),
 }
 
 impl IntoResponse for AppError {
@@ -64,6 +66,9 @@ impl IntoResponse for AppError {
             }
             AppError::DbError(err) =>
                 (StatusCode::INTERNAL_SERVER_ERROR, ApiResponse::<()>::error(err.to_string())),
+            AppError::Forbidden(msg) => (StatusCode::FORBIDDEN, ApiResponse::<()>::error(msg)),
+            AppError::Unauthorized(msg) =>
+                (StatusCode::UNAUTHORIZED, ApiResponse::<()>::error(msg)),
         };
 
         (status, Json(body)).into_response()

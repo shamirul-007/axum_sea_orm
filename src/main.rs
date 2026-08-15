@@ -5,10 +5,12 @@ mod state;
 mod utils;
 mod entities;
 
+use std::sync::Arc;
+
 use axum::Router;
 use dotenvy::dotenv;
 use tokio::net::TcpListener;
-use crate::{ state::AppState, utils::init_logger };
+use crate::{ state::{ AppState, Config }, utils::init_logger };
 
 #[tokio::main]
 async fn main() {
@@ -22,6 +24,7 @@ async fn main() {
 
     let state = AppState {
         db,
+        config: Arc::new(Config::from_env()),
     };
     tracing::info!("global state created");
 
