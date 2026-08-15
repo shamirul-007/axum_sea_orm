@@ -1,4 +1,5 @@
 use sea_orm::{ ActiveModelTrait, DatabaseConnection, EntityTrait, Set };
+use uuid::Uuid;
 
 use crate::{ entities::user, utils::AppError };
 use crate::modules::user::dto::request::create_user_dto::CreateUserDto;
@@ -19,7 +20,7 @@ impl UserService {
         Ok(users)
     }
 
-    pub async fn get_user(&self, id: i32) -> Result<user::Model, AppError> {
+    pub async fn get_user(&self, id: Uuid) -> Result<user::Model, AppError> {
         let user = user::Entity
             ::find_by_id(id)
             .one(&self.db).await?
@@ -38,7 +39,11 @@ impl UserService {
         Ok(user)
     }
 
-    pub async fn update_user(&self, id: i32, data: UpdateUserDto) -> Result<user::Model, AppError> {
+    pub async fn update_user(
+        &self,
+        id: Uuid,
+        data: UpdateUserDto
+    ) -> Result<user::Model, AppError> {
         let user = self.get_user(id).await?;
 
         let mut user_active: user::ActiveModel = user.into();
